@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Syperion Explorer</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@1" rel="stylesheet">
+
+<style>
+    body {
+        margin: 0;
+        background: #121212;
+        color: #e0e0e0;
+        font-family: "Roboto Mono", monospace;
+    }
+
+    header {
+        padding: 20px;
+        font-size: 1.4rem;
+        font-weight: 500;
+        border-bottom: 1px solid #333;
+    }
+
+    #file-list {
+        padding: 20px;
+        display: flex;
+        flex-direction: column;
+        gap: 12px;
+    }
+
+    .item {
+        display: flex;
+        align-items: center;
+        padding: 10px 14px;
+        background: #1e1e1e;
+        border-radius: 6px;
+        text-decoration: none;
+        color: inherit;
+        transition: background 0.2s;
+    }
+
+    .item:hover {
+        background: #2a2a2a;
+    }
+
+    .icon {
+        font-family: "Material Symbols Rounded";
+        font-size: 24px;
+        margin-right: 12px;
+    }
+
+    .folder { color: #ffca28; }
+    .file { color: #90caf9; }
+</style>
+</head>
+<body>
+
+<header>syperion534's repo files</header>
+<div id="file-list">Loading…</div>
+
+<script>
+const USER = "syperion534";
+const REPO = "syperion534";
+const BRANCH = "main";
+
+async function loadFiles() {
+    const url = `https://api.github.com/repos/${USER}/${REPO}/contents/?ref=${BRANCH}`;
+    const container = document.getElementById("file-list");
+
+    try {
+        const res = await fetch(url);
+        const data = await res.json();
+
+        container.innerHTML = "";
+
+        data.forEach(item => {
+            const isFolder = item.type === "dir";
+
+            const el = document.createElement("a");
+            el.className = "item";
+            el.href = item.html_url;
+
+            const icon = document.createElement("span");
+            icon.className = `icon ${isFolder ? "folder" : "file"}`;
+            icon.textContent = isFolder ? "folder" : "description";
+
+            const name = document.createElement("span");
+            name.textContent = item.name;
+
+            el.appendChild(icon);
+            el.appendChild(name);
+            container.appendChild(el);
+        });
+
+    } catch (err) {
+        container.innerHTML = "Error loading directory.";
+        console.error(err);
+    }
+}
+
+loadFiles();
+</script>
+
+</body>
+</html>
