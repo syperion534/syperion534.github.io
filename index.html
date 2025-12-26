@@ -502,15 +502,15 @@
                 </div>
                 <div class="user-meta-sub">
                     <span class="tag">
-                        <span class="material-symbols-rounded">description</span>
+                        <span class="material-symbols-rounded">Description</span>
                         <span id="file-count">– files</span>
                     </span>
                     <span class="tag">
-                        <span class="material-symbols-rounded">source</span>
+                        <span class="material-symbols-rounded">Merge</span>
                         <span id="default-branch">branch: –</span>
                     </span>
                     <span class="tag">
-                        <span class="material-symbols-rounded">schedule</span>
+                        <span class="material-symbols-rounded">Schedule</span>
                         <span id="repo-updated">updated: –</span>
                     </span>
                 </div>
@@ -519,11 +519,11 @@
 
         <div class="topbar-actions">
             <button id="view-list-btn" class="btn active" type="button">
-                <span class="material-symbols-rounded">view_list</span>
+                <span class="material-symbols-rounded">View List</span>
                 <span>List</span>
             </button>
             <button id="view-grid-btn" class="btn" type="button">
-                <span class="material-symbols-rounded">grid_view</span>
+                <span class="material-symbols-rounded">Grid View</span>
                 <span>Grid</span>
             </button>
         </div>
@@ -535,7 +535,7 @@
         <section class="pane" id="files-pane">
             <div class="pane-header">
                 <div class="pane-title">
-                    <span class="material-symbols-rounded">folder_open</span>
+                    <span class="material-symbols-rounded">Folder Open</span>
                     <span>Files</span>
                 </div>
                 <div class="path-bar" id="path-bar"></div>
@@ -557,7 +557,7 @@
         <section class="pane">
             <div class="pane-header">
                 <div class="pane-title">
-                    <span class="material-symbols-rounded">preview</span>
+                    <span class="material-symbols-rounded">Preview</span>
                     <span>Preview</span>
                 </div>
             </div>
@@ -565,7 +565,7 @@
                 <div id="viewer">
                     <div class="viewer-empty">
                         <div class="viewer-placeholder-icon material-symbols-rounded">
-                            browse_activity
+                            Arrow Selector Tool
                         </div>
                         <div>Click a file to view its content here.</div>
                     </div>
@@ -653,7 +653,7 @@ function classifyFile(ext, mime) {
 function getIconForItem(item) {
     if (item.type === "dir") {
         return {
-            icon: "folder",
+            icon: "Folder",
             color: "#ffca28",
             bg: "#3e2723",
             label: "folder"
@@ -664,41 +664,41 @@ function getIconForItem(item) {
     const type = classifyFile(ext, item.type);
 
     const base = {
-        icon: "description",
+        icon: "Description",
         color: "#90caf9",
         bg: "#0d47a1",
         label: ext || "file"
     };
 
     const map = {
-        "md": {icon: "article", bg: "#263238"},
-        "txt": {icon: "notes", bg: "#263238"},
-        "json": {icon: "data_object", bg: "#1b5e20"},
-        "yml": {icon: "data_object", bg: "#1b5e20"},
-        "yaml": {icon: "data_object", bg: "#1b5e20"},
-        "html": {icon: "html", bg: "#4a148c"},
-        "htm": {icon: "html", bg: "#4a148c"},
-        "css": {icon: "css", bg: "#01579b"},
-        "js": {icon: "javascript", bg: "#f57f17"},
-        "ts": {icon: "code", bg: "#0d47a1"},
-        "tsx": {icon: "code", bg: "#0d47a1"},
-        "jsx": {icon: "code", bg: "#0d47a1"},
-        "png": {icon: "image", bg: "#1b5e20"},
-        "jpg": {icon: "image", bg: "#1b5e20"},
-        "jpeg": {icon: "image", bg: "#1b5e20"},
-        "gif": {icon: "image", bg: "#1b5e20"},
-        "webp": {icon: "image", bg: "#1b5e20"},
-        "svg": {icon: "image", bg: "#1b5e20"},
-        "mp3": {icon: "audio_file", bg: "#4a148c"},
-        "wav": {icon: "audio_file", bg: "#4a148c"},
-        "ogg": {icon: "audio_file", bg: "#4a148c"},
-        "mp4": {icon: "movie", bg: "#3e2723"},
-        "webm": {icon: "movie", bg: "#3e2723"},
-        "mkv": {icon: "movie", bg: "#3e2723"},
-        "zip": {icon: "folder_zip", bg: "#3e2723"},
-        "tar": {icon: "folder_zip", bg: "#3e2723"},
-        "gz": {icon: "folder_zip", bg: "#3e2723"},
-        "pdf": {icon: "picture_as_pdf", bg: "#b71c1c"}
+        "md": {icon: "Markdown", bg: "#263238"},
+        "txt": {icon: "Text Fields", bg: "#263238"},
+        "json": {icon: "File Json", bg: "#1b5e20"},
+        "yml": {icon: "File Copy", bg: "#1b5e20"},
+        "yaml": {icon: "File Copy", bg: "#1b5e20"},
+        "html": {icon: "HTML", bg: "#4a148c"},
+        "htm": {icon: "HTML", bg: "#4a148c"},
+        "css": {icon: "CSS", bg: "#01579b"},
+        "js": {icon: "Javascript", bg: "#f57f17"},
+        "ts": {icon: "Code", bg: "#0d47a1"},
+        "tsx": {icon: "Code", bg: "#0d47a1"},
+        "jsx": {icon: "Code", bg: "#0d47a1"},
+        "png": {icon: "Image", bg: "#1b5e20"},
+        "jpg": {icon: "Image", bg: "#1b5e20"},
+        "jpeg": {icon: "Image", bg: "#1b5e20"},
+        "gif": {icon: "Image", bg: "#1b5e20"},
+        "webp": {icon: "Image", bg: "#1b5e20"},
+        "svg": {icon: "Image", bg: "#1b5e20"},
+        "mp3": {icon: "Audio File", bg: "#4a148c"},
+        "wav": {icon: "Audio File", bg: "#4a148c"},
+        "ogg": {icon: "Audio File", bg: "#4a148c"},
+        "mp4": {icon: "Video File", bg: "#3e2723"},
+        "webm": {icon: "Video File", bg: "#3e2723"},
+        "mkv": {icon: "Video File", bg: "#3e2723"},
+        "zip": {icon: "Folder Zip", bg: "#3e2723"},
+        "tar": {icon: "Folder Zip", bg: "#3e2723"},
+        "gz": {icon: "Folder Zip", bg: "#3e2723"},
+        "pdf": {icon: "Picture As Pdf", bg: "#b71c1c"}
     };
 
     if (map[ext]) {
@@ -711,13 +711,13 @@ function getIconForItem(item) {
     }
 
     if (type === "image") {
-        return {...base, icon: "image", bg: "#1b5e20"};
+        return {...base, icon: "Image", bg: "#1b5e20"};
     } else if (type === "audio") {
-        return {...base, icon: "audio_file", bg: "#4a148c"};
+        return {...base, icon: "Audio File", bg: "#4a148c"};
     } else if (type === "video") {
-        return {...base, icon: "movie", bg: "#3e2723"};
+        return {...base, icon: "Video File", bg: "#3e2723"};
     } else if (type === "text") {
-        return {...base, icon: "description", bg: "#263238"};
+        return {...base, icon: "Description", bg: "#263238"};
     }
 
     return base;
