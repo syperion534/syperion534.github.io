@@ -3,104 +3,1137 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Syperion Explorer</title>
+<title>Repo Explorer</title>
 
+<!-- Google Fonts -->
 <link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@1" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@1;wght@300..700;GRAD@0;opsz@20..48" rel="stylesheet">
 
 <style>
+    :root {
+        --bg: #121212;
+        --bg-elevated: #1e1e1e;
+        --bg-elevated-soft: #181818;
+        --border-subtle: #333;
+        --accent: #90caf9;
+        --accent-soft: #1e88e5;
+        --text: #e0e0e0;
+        --text-dim: #a0a0a0;
+        --danger: #ef5350;
+        --radius: 8px;
+        --transition-fast: 0.15s ease-out;
+    }
+
+    * {
+        box-sizing: border-box;
+    }
+
     body {
         margin: 0;
-        background: #121212;
-        color: #e0e0e0;
+        background: var(--bg);
+        color: var(--text);
         font-family: "Roboto Mono", monospace;
     }
 
-    header {
-        padding: 20px;
-        font-size: 1.4rem;
-        font-weight: 500;
-        border-bottom: 1px solid #333;
+    .material-symbols-rounded {
+        font-family: "Material Symbols Rounded";
+        font-weight: 400;
+        font-style: normal;
+        font-size: 20px;
+        line-height: 1;
+        letter-spacing: normal;
+        text-transform: none;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        vertical-align: middle;
     }
 
-    #file-list {
-        padding: 20px;
+    a {
+        color: inherit;
+        text-decoration: none;
+    }
+
+    /* Layout */
+
+    .page {
         display: flex;
         flex-direction: column;
+        min-height: 100vh;
+    }
+
+    .topbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 16px;
+        padding: 12px 20px;
+        border-bottom: 1px solid var(--border-subtle);
+        background: var(--bg-elevated-soft);
+        position: sticky;
+        top: 0;
+        z-index: 10;
+    }
+
+    .user-repo {
+        display: flex;
+        align-items: center;
         gap: 12px;
     }
 
-    .item {
+    .avatar {
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #333;
+        flex-shrink: 0;
+    }
+
+    .user-meta {
+        display: flex;
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .user-meta-main {
+        display: flex;
+        align-items: baseline;
+        gap: 8px;
+        font-size: 0.95rem;
+    }
+
+    .user-name {
+        font-weight: 500;
+    }
+
+    .repo-name {
+        color: var(--accent);
+    }
+
+    .user-meta-sub {
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 10px;
+    }
+
+    .tag {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .tag .material-symbols-rounded {
+        font-size: 16px;
+    }
+
+    .topbar-actions {
         display: flex;
         align-items: center;
-        padding: 10px 14px;
-        background: #1e1e1e;
-        border-radius: 6px;
-        text-decoration: none;
-        color: inherit;
-        transition: background 0.2s;
+        gap: 8px;
     }
 
-    .item:hover {
-        background: #2a2a2a;
+    .btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 6px 10px;
+        border-radius: 999px;
+        border: 1px solid var(--border-subtle);
+        background: transparent;
+        color: var(--text);
+        font-size: 0.75rem;
+        cursor: pointer;
+        transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
     }
 
-    .icon {
-        font-family: "Material Symbols Rounded";
-        font-size: 24px;
-        margin-right: 12px;
+    .btn:hover {
+        background: var(--bg-elevated);
     }
 
-    .folder { color: #ffca28; }
-    .file { color: #90caf9; }
+    .btn.active {
+        background: var(--accent-soft);
+        border-color: var(--accent-soft);
+        color: #fff;
+    }
+
+    .btn .material-symbols-rounded {
+        font-size: 18px;
+    }
+
+    .layout-main {
+        display: grid;
+        grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
+        gap: 1px;
+        border-top: 1px solid var(--border-subtle);
+        min-height: 0;
+        flex: 1;
+    }
+
+    @media (max-width: 900px) {
+        .layout-main {
+            grid-template-columns: 1fr;
+            grid-auto-rows: auto;
+        }
+    }
+
+    .pane {
+        min-height: 0;
+        display: flex;
+        flex-direction: column;
+        background: var(--bg);
+    }
+
+    .pane-header {
+        padding: 10px 16px;
+        border-bottom: 1px solid var(--border-subtle);
+        font-size: 0.8rem;
+        color: var(--text-dim);
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        background: var(--bg-elevated-soft);
+    }
+
+    .pane-title {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .pane-title .material-symbols-rounded {
+        font-size: 18px;
+        color: var(--accent);
+    }
+
+    .pane-body {
+        padding: 10px 16px;
+        overflow: auto;
+    }
+
+    /* Path / breadcrumb */
+
+    .path-bar {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+        flex-wrap: wrap;
+        font-size: 0.8rem;
+    }
+
+    .crumb {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+        cursor: pointer;
+        padding: 3px 6px;
+        border-radius: 999px;
+        transition: background var(--transition-fast), color var(--transition-fast);
+    }
+
+    .crumb-root {
+        font-weight: 500;
+        color: var(--accent);
+    }
+
+    .crumb:hover {
+        background: var(--bg-elevated);
+    }
+
+    .crumb-separator {
+        opacity: 0.5;
+        font-size: 0.8rem;
+    }
+
+    /* File list */
+
+    .file-toolbar {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 8px;
+        margin-bottom: 8px;
+        font-size: 0.75rem;
+        color: var(--text-dim);
+    }
+
+    .file-toolbar-left {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        flex-wrap: wrap;
+    }
+
+    .file-toolbar-right {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .files {
+        display: flex;
+        flex-direction: column;
+        gap: 6px;
+    }
+
+    .view-grid .files {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 10px;
+    }
+
+    .file-item {
+        display: grid;
+        grid-template-columns: auto minmax(0, 1fr);
+        grid-template-rows: auto auto;
+        grid-template-areas:
+            "icon main"
+            "icon meta";
+        gap: 2px 8px;
+        padding: 8px 10px;
+        border-radius: var(--radius);
+        background: var(--bg-elevated);
+        cursor: pointer;
+        font-size: 0.8rem;
+        border: 1px solid transparent;
+        transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .view-grid .file-item {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto auto auto;
+        grid-template-areas:
+            "icon"
+            "main"
+            "meta";
+        text-align: left;
+    }
+
+    .file-item:hover {
+        background: #242424;
+        border-color: var(--border-subtle);
+    }
+
+    .file-item.active {
+        border-color: var(--accent);
+        box-shadow: 0 0 0 1px rgba(144, 202, 249, 0.4);
+    }
+
+    .file-icon {
+        grid-area: icon;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+
+    .file-icon-inner {
+        width: 30px;
+        height: 30px;
+        border-radius: 999px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        background: #263238;
+        color: var(--accent);
+    }
+
+    .file-main {
+        grid-area: main;
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 6px;
+    }
+
+    .file-name {
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .file-badge {
+        font-size: 0.65rem;
+        padding: 2px 6px;
+        border-radius: 999px;
+        background: rgba(144, 202, 249, 0.12);
+        color: var(--accent);
+        flex-shrink: 0;
+    }
+
+    .file-meta {
+        grid-area: meta;
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+    }
+
+    .meta-pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 4px;
+    }
+
+    .meta-pill .material-symbols-rounded {
+        font-size: 14px;
+    }
+
+    /* Viewer */
+
+    .viewer-empty {
+        font-size: 0.8rem;
+        color: var(--text-dim);
+    }
+
+    .viewer-header-row {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 10px;
+        font-size: 0.78rem;
+    }
+
+    .viewer-title {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .viewer-title-name {
+        max-width: 260px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+    }
+
+    .viewer-controls {
+        display: flex;
+        align-items: center;
+        gap: 6px;
+    }
+
+    .viewer-meta {
+        margin-top: 4px;
+        font-size: 0.7rem;
+        color: var(--text-dim);
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+
+    .viewer-content {
+        margin-top: 10px;
+        border-radius: var(--radius);
+        border: 1px solid var(--border-subtle);
+        background: var(--bg-elevated);
+        padding: 10px;
+        max-height: calc(100vh - 220px);
+        overflow: auto;
+        font-size: 0.8rem;
+    }
+
+    .viewer-content pre {
+        margin: 0;
+        white-space: pre;
+        overflow: auto;
+    }
+
+    .viewer-content img {
+        max-width: 100%;
+        height: auto;
+        display: block;
+        border-radius: var(--radius);
+    }
+
+    .viewer-content video,
+    .viewer-content audio {
+        max-width: 100%;
+        display: block;
+        border-radius: var(--radius);
+    }
+
+    .viewer-placeholder-icon {
+        font-size: 34px;
+        margin-bottom: 8px;
+        color: var(--border-subtle);
+    }
+
+    .pill {
+        display: inline-flex;
+        align-items: center;
+        gap: 6px;
+        padding: 4px 8px;
+        border-radius: 999px;
+        border: 1px solid var(--border-subtle);
+        font-size: 0.65rem;
+        color: var(--text-dim);
+    }
+
+    .pill .material-symbols-rounded {
+        font-size: 14px;
+    }
+
+    .muted {
+        color: var(--text-dim);
+    }
+
+    /* Small helper */
+
+    .text-mono {
+        font-family: "Roboto Mono", monospace;
+    }
 </style>
 </head>
 <body>
+<div class="page">
 
-<header>syperion534's repo files</header>
-<div id="file-list">Loading…</div>
+    <!-- TOP BAR -->
+    <header class="topbar">
+        <div class="user-repo">
+            <img id="avatar" class="avatar" alt="User avatar">
+            <div class="user-meta">
+                <div class="user-meta-main">
+                    <span id="user-name" class="user-name">Loading…</span>
+                    <span>/</span>
+                    <span id="repo-name" class="repo-name text-mono"></span>
+                </div>
+                <div class="user-meta-sub">
+                    <span class="tag">
+                        <span class="material-symbols-rounded">description</span>
+                        <span id="file-count">– files</span>
+                    </span>
+                    <span class="tag">
+                        <span class="material-symbols-rounded">source</span>
+                        <span id="default-branch">branch: –</span>
+                    </span>
+                    <span class="tag">
+                        <span class="material-symbols-rounded">schedule</span>
+                        <span id="repo-updated">updated: –</span>
+                    </span>
+                </div>
+            </div>
+        </div>
+
+        <div class="topbar-actions">
+            <button id="view-list-btn" class="btn active" type="button">
+                <span class="material-symbols-rounded">view_list</span>
+                <span>List</span>
+            </button>
+            <button id="view-grid-btn" class="btn" type="button">
+                <span class="material-symbols-rounded">grid_view</span>
+                <span>Grid</span>
+            </button>
+        </div>
+    </header>
+
+    <main class="layout-main">
+
+        <!-- LEFT: FILES -->
+        <section class="pane" id="files-pane">
+            <div class="pane-header">
+                <div class="pane-title">
+                    <span class="material-symbols-rounded">folder_open</span>
+                    <span>Files</span>
+                </div>
+                <div class="path-bar" id="path-bar"></div>
+            </div>
+            <div class="pane-body view-list" id="files-view">
+                <div class="file-toolbar">
+                    <div class="file-toolbar-left">
+                        <span id="current-folder-label" class="muted">Path: /</span>
+                    </div>
+                    <div class="file-toolbar-right">
+                        <span id="item-count" class="muted">– items</span>
+                    </div>
+                </div>
+                <div id="files-container" class="files"></div>
+            </div>
+        </section>
+
+        <!-- RIGHT: VIEWER -->
+        <section class="pane">
+            <div class="pane-header">
+                <div class="pane-title">
+                    <span class="material-symbols-rounded">preview</span>
+                    <span>Preview</span>
+                </div>
+            </div>
+            <div class="pane-body">
+                <div id="viewer">
+                    <div class="viewer-empty">
+                        <div class="viewer-placeholder-icon material-symbols-rounded">
+                            browse_activity
+                        </div>
+                        <div>Click a file to view its content here.</div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+    </main>
+</div>
 
 <script>
-const USER = "syperion534";
-const REPO = "syperion534.github.io";
-const BRANCH = "main";
+/* =======================
+   CONFIG
+   ======================= */
+const CONFIG = {
+    USER: "syperion534",
+    REPO: "syperion534.github.io",
+    BRANCH: "main",
+    MAX_FILES_COUNT: 5000
+};
+    
 
-async function loadFiles() {
-    const url = `https://api.github.com/repos/${USER}/${REPO}/contents/?ref=${BRANCH}`;
-    const container = document.getElementById("file-list");
+/* =======================
+   STATE
+   ======================= */
+let currentPath = "";
+let currentView = "list"; // "list" or "grid"
+let currentItems = [];
+let selectedFile = null;
+let totalFileCount = 0;
+
+/* =======================
+   HELPERS
+   ======================= */
+
+function joinPath(base, segment) {
+    if (!base) return segment;
+    return base.replace(/\/+$/, "") + "/" + segment.replace(/^\/+/, "");
+}
+
+function splitPath(path) {
+    if (!path) return [];
+    return path.split("/").filter(Boolean);
+}
+
+function formatBytes(bytes) {
+    if (bytes == null || isNaN(bytes)) return "–";
+    const units = ["B", "KB", "MB", "GB", "TB"];
+    let i = 0;
+    let num = bytes;
+    while (num >= 1024 && i < units.length - 1) {
+        num /= 1024;
+        i++;
+    }
+    return `${num.toFixed(num < 10 && i > 0 ? 1 : 0)} ${units[i]}`;
+}
+
+function formatDate(iso) {
+    if (!iso) return "–";
+    const d = new Date(iso);
+    if (isNaN(d)) return "–";
+    return d.toLocaleString();
+}
+
+function getExtension(name) {
+    const idx = name.lastIndexOf(".");
+    if (idx === -1) return "";
+    return name.slice(idx + 1).toLowerCase();
+}
+
+function classifyFile(ext, mime) {
+    const textExts = ["txt", "md", "markdown", "json", "yml", "yaml", "xml", "html", "htm", "css", "js", "ts", "tsx", "jsx", "c", "cpp", "h", "hpp", "py", "rb", "rs", "go", "java", "cs", "php", "sh", "bat", "lua", "ini", "cfg", "toml"];
+    const imgExts = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico", "avif"];
+    const audioExts = ["mp3", "ogg", "wav", "flac", "m4a", "aac", "opus"];
+    const videoExts = ["mp4", "webm", "ogg", "mov", "m4v", "avi", "mkv"];
+
+    if (imgExts.includes(ext) || (mime && mime.startsWith("image/"))) return "image";
+    if (audioExts.includes(ext) || (mime && mime.startsWith("audio/"))) return "audio";
+    if (videoExts.includes(ext) || (mime && mime.startsWith("video/"))) return "video";
+    if (textExts.includes(ext) || (mime && (mime.startsWith("text/") || mime.endsWith("json")))) return "text";
+
+    return "binary";
+}
+
+function getIconForItem(item) {
+    if (item.type === "dir") {
+        return {
+            icon: "folder",
+            color: "#ffca28",
+            bg: "#3e2723",
+            label: "folder"
+        };
+    }
+
+    const ext = getExtension(item.name);
+    const type = classifyFile(ext, item.type);
+
+    const base = {
+        icon: "description",
+        color: "#90caf9",
+        bg: "#0d47a1",
+        label: ext || "file"
+    };
+
+    const map = {
+        "md": {icon: "article", bg: "#263238"},
+        "txt": {icon: "notes", bg: "#263238"},
+        "json": {icon: "data_object", bg: "#1b5e20"},
+        "yml": {icon: "data_object", bg: "#1b5e20"},
+        "yaml": {icon: "data_object", bg: "#1b5e20"},
+        "html": {icon: "html", bg: "#4a148c"},
+        "htm": {icon: "html", bg: "#4a148c"},
+        "css": {icon: "css", bg: "#01579b"},
+        "js": {icon: "javascript", bg: "#f57f17"},
+        "ts": {icon: "code", bg: "#0d47a1"},
+        "tsx": {icon: "code", bg: "#0d47a1"},
+        "jsx": {icon: "code", bg: "#0d47a1"},
+        "png": {icon: "image", bg: "#1b5e20"},
+        "jpg": {icon: "image", bg: "#1b5e20"},
+        "jpeg": {icon: "image", bg: "#1b5e20"},
+        "gif": {icon: "image", bg: "#1b5e20"},
+        "webp": {icon: "image", bg: "#1b5e20"},
+        "svg": {icon: "image", bg: "#1b5e20"},
+        "mp3": {icon: "audio_file", bg: "#4a148c"},
+        "wav": {icon: "audio_file", bg: "#4a148c"},
+        "ogg": {icon: "audio_file", bg: "#4a148c"},
+        "mp4": {icon: "movie", bg: "#3e2723"},
+        "webm": {icon: "movie", bg: "#3e2723"},
+        "mkv": {icon: "movie", bg: "#3e2723"},
+        "zip": {icon: "folder_zip", bg: "#3e2723"},
+        "tar": {icon: "folder_zip", bg: "#3e2723"},
+        "gz": {icon: "folder_zip", bg: "#3e2723"},
+        "pdf": {icon: "picture_as_pdf", bg: "#b71c1c"}
+    };
+
+    if (map[ext]) {
+        return {
+            icon: map[ext].icon || base.icon,
+            color: base.color,
+            bg: map[ext].bg || base.bg,
+            label: ext || base.label
+        };
+    }
+
+    if (type === "image") {
+        return {...base, icon: "image", bg: "#1b5e20"};
+    } else if (type === "audio") {
+        return {...base, icon: "audio_file", bg: "#4a148c"};
+    } else if (type === "video") {
+        return {...base, icon: "movie", bg: "#3e2723"};
+    } else if (type === "text") {
+        return {...base, icon: "description", bg: "#263238"};
+    }
+
+    return base;
+}
+
+/* =======================
+   API
+   ======================= */
+
+async function fetchJSON(url) {
+    const res = await fetch(url);
+    if (!res.ok) throw new Error(`HTTP ${res.status} for ${url}`);
+    return await res.json();
+}
+
+function repoContentsURL(path) {
+    const encodedPath = path ? "/" + encodeURIComponent(path).replace(/%2F/g, "/") : "";
+    return `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}/contents${encodedPath}?ref=${CONFIG.BRANCH}`;
+}
+
+function repoInfoURL() {
+    return `https://api.github.com/repos/${CONFIG.USER}/${CONFIG.REPO}`;
+}
+
+function userInfoURL() {
+    return `https://api.github.com/users/${CONFIG.USER}`;
+}
+
+function rawFileURL(item) {
+    // download_url is already raw.githubusercontent.com link
+    return item.download_url;
+}
+
+/* Count files recursively (with a limit) */
+async function countAllFiles(path = "", seen = {count: 0}) {
+    if (seen.count >= CONFIG.MAX_FILES_COUNT) return;
+    const url = repoContentsURL(path);
+    const data = await fetchJSON(url);
+
+    for (const item of data) {
+        if (item.type === "file") {
+            seen.count++;
+            if (seen.count >= CONFIG.MAX_FILES_COUNT) break;
+        } else if (item.type === "dir") {
+            await countAllFiles(item.path, seen);
+            if (seen.count >= CONFIG.MAX_FILES_COUNT) break;
+        }
+    }
+    return seen.count;
+}
+
+/* =======================
+   RENDER: TOP BAR
+   ======================= */
+
+async function loadTopBar() {
+    const [user, repo] = await Promise.all([
+        fetchJSON(userInfoURL()),
+        fetchJSON(repoInfoURL())
+    ]);
+
+    const avatar = document.getElementById("avatar");
+    const userNameEl = document.getElementById("user-name");
+    const repoNameEl = document.getElementById("repo-name");
+    const branchEl = document.getElementById("default-branch");
+    const updatedEl = document.getElementById("repo-updated");
+    const fileCountEl = document.getElementById("file-count");
+
+    avatar.src = user.avatar_url;
+    avatar.alt = `${user.login} avatar`;
+    userNameEl.textContent = user.name || user.login;
+    repoNameEl.textContent = repo.name;
+    branchEl.textContent = `branch: ${repo.default_branch}`;
+    updatedEl.textContent = `updated: ${formatDate(repo.pushed_at)}`;
+
+    // Use repo default_branch for browsing if you want
+    CONFIG.BRANCH = repo.default_branch;
 
     try {
-        const res = await fetch(url);
-        const data = await res.json();
-
-        container.innerHTML = "";
-
-        data.forEach(item => {
-            const isFolder = item.type === "dir";
-
-            const el = document.createElement("a");
-            el.className = "item";
-            el.href = item.html_url;
-
-            const icon = document.createElement("span");
-            icon.className = `icon ${isFolder ? "folder" : "file"}`;
-            icon.textContent = isFolder ? "folder" : "description";
-
-            const name = document.createElement("span");
-            name.textContent = item.name;
-
-            el.appendChild(icon);
-            el.appendChild(name);
-            container.appendChild(el);
-        });
-
-    } catch (err) {
-        container.innerHTML = "Error loading directory.";
-        console.error(err);
+        totalFileCount = await countAllFiles("");
+        fileCountEl.textContent = `${totalFileCount >= CONFIG.MAX_FILES_COUNT ? CONFIG.MAX_FILES_COUNT + "+" : totalFileCount} files`;
+    } catch (e) {
+        console.warn("Error counting files:", e);
+        fileCountEl.textContent = "files: n/a";
     }
 }
 
-loadFiles();
+/* =======================
+   RENDER: PATH BAR
+   ======================= */
+
+function renderPathBar() {
+    const pathBar = document.getElementById("path-bar");
+    const label = document.getElementById("current-folder-label");
+    pathBar.innerHTML = "";
+
+    const parts = splitPath(currentPath);
+
+    const rootCrumb = document.createElement("span");
+    rootCrumb.className = "crumb crumb-root";
+    rootCrumb.textContent = "/";
+    rootCrumb.title = "Go to repository root";
+    rootCrumb.addEventListener("click", () => navigateToPath(""));
+    pathBar.appendChild(rootCrumb);
+
+    let pathAccum = "";
+    parts.forEach((part, idx) => {
+        const sep = document.createElement("span");
+        sep.className = "crumb-separator";
+        sep.textContent = "/";
+        pathBar.appendChild(sep);
+
+        pathAccum = joinPath(pathAccum, part);
+        const crumb = document.createElement("span");
+        crumb.className = "crumb";
+        crumb.textContent = part;
+        crumb.title = pathAccum;
+        crumb.addEventListener("click", () => navigateToPath(pathAccum));
+        pathBar.appendChild(crumb);
+    });
+
+    label.textContent = "Path: " + (currentPath ? "/" + currentPath : "/");
+}
+
+/* =======================
+   RENDER: FILE LIST
+   ======================= */
+
+function clearActiveFileSelection() {
+    document.querySelectorAll(".file-item.active").forEach(el => {
+        el.classList.remove("active");
+    });
+}
+
+function renderFiles(items) {
+    const container = document.getElementById("files-container");
+    const countEl = document.getElementById("item-count");
+    container.innerHTML = "";
+
+    currentItems = items;
+
+    if (!items || !items.length) {
+        countEl.textContent = "0 items";
+        container.innerHTML = `<div class="muted" style="font-size:0.8rem;">This folder is empty.</div>`;
+        return;
+    }
+
+    countEl.textContent = `${items.length} item${items.length !== 1 ? "s" : ""}`;
+
+    const sorted = [...items].sort((a, b) => {
+        if (a.type === b.type) {
+            return a.name.toLowerCase().localeCompare(b.name.toLowerCase());
+        }
+        return a.type === "dir" ? -1 : 1;
+    });
+
+    sorted.forEach(item => {
+        const isDir = item.type === "dir";
+        const iconInfo = getIconForItem(item);
+
+        const el = document.createElement("div");
+        el.className = "file-item";
+        el.dataset.path = item.path;
+        el.dataset.type = item.type;
+
+        const iconWrap = document.createElement("div");
+        iconWrap.className = "file-icon";
+        const iconInner = document.createElement("div");
+        iconInner.className = "file-icon-inner material-symbols-rounded";
+        iconInner.style.backgroundColor = iconInfo.bg;
+        iconInner.style.color = iconInfo.color;
+        iconInner.textContent = iconInfo.icon;
+        iconWrap.appendChild(iconInner);
+
+        const main = document.createElement("div");
+        main.className = "file-main";
+
+        const name = document.createElement("div");
+        name.className = "file-name text-mono";
+        name.textContent = item.name;
+
+        const badge = document.createElement("div");
+        badge.className = "file-badge text-mono";
+        badge.textContent = isDir ? "folder" : (getExtension(item.name) || "file");
+
+        main.appendChild(name);
+        main.appendChild(badge);
+
+        const meta = document.createElement("div");
+        meta.className = "file-meta";
+
+        const sizePill = document.createElement("span");
+        sizePill.className = "meta-pill";
+        sizePill.innerHTML = `
+            <span class="material-symbols-rounded">data_usage</span>
+            <span>${isDir ? "—" : formatBytes(item.size)}</span>
+        `;
+
+        const typePill = document.createElement("span");
+        typePill.className = "meta-pill";
+        typePill.innerHTML = `
+            <span class="material-symbols-rounded">category</span>
+            <span>${isDir ? "Directory" : (item.type || "File")}</span>
+        `;
+
+        const shaPill = document.createElement("span");
+        shaPill.className = "meta-pill";
+        shaPill.innerHTML = `
+            <span class="material-symbols-rounded">fingerprint</span>
+            <span>${item.sha.slice(0, 7)}</span>
+        `;
+
+        meta.appendChild(sizePill);
+        meta.appendChild(typePill);
+        meta.appendChild(shaPill);
+
+        el.appendChild(iconWrap);
+        el.appendChild(main);
+        el.appendChild(meta);
+
+        el.addEventListener("click", async (ev) => {
+            ev.preventDefault();
+            ev.stopPropagation();
+
+            clearActiveFileSelection();
+            el.classList.add("active");
+
+            if (isDir) {
+                navigateToPath(item.path);
+            } else {
+                selectedFile = item;
+                await openFileInViewer(item);
+            }
+        });
+
+        container.appendChild(el);
+    });
+}
+
+/* =======================
+   FILE VIEWER
+   ======================= */
+
+function renderViewerEmpty() {
+    const viewer = document.getElementById("viewer");
+    viewer.innerHTML = `
+        <div class="viewer-empty">
+            <div class="viewer-placeholder-icon material-symbols-rounded">
+                browse_activity
+            </div>
+            <div>Click a file to view its content here.</div>
+        </div>
+    `;
+}
+
+async function openFileInViewer(item) {
+    const viewer = document.getElementById("viewer");
+
+    const ext = getExtension(item.name);
+    const classification = classifyFile(ext, null);
+    const iconInfo = getIconForItem(item);
+
+    const headerHTML = `
+        <div class="viewer-header-row">
+            <div class="viewer-title">
+                <span class="material-symbols-rounded" style="color:${iconInfo.color};">${iconInfo.icon}</span>
+                <span class="viewer-title-name text-mono" title="${item.path}">${item.name}</span>
+            </div>
+            <div class="viewer-controls">
+                <a class="btn" href="${item.html_url}" target="_blank" rel="noopener noreferrer">
+                    <span class="material-symbols-rounded">open_in_new</span>
+                    <span>On GitHub</span>
+                </a>
+                <a class="btn" href="${rawFileURL(item)}" target="_blank" rel="noopener noreferrer">
+                    <span class="material-symbols-rounded">download</span>
+                    <span>Raw</span>
+                </a>
+            </div>
+        </div>
+        <div class="viewer-meta">
+            <span class="pill">
+                <span class="material-symbols-rounded">data_usage</span>
+                <span>${formatBytes(item.size)}</span>
+            </span>
+            <span class="pill">
+                <span class="material-symbols-rounded">category</span>
+                <span>${classification}</span>
+            </span>
+            <span class="pill">
+                <span class="material-symbols-rounded">fingerprint</span>
+                <span>${item.sha.slice(0, 10)}</span>
+            </span>
+        </div>
+    `;
+
+    viewer.innerHTML = headerHTML + `<div class="viewer-content"><div class="muted">Loading content…</div></div>`;
+    const contentDiv = viewer.querySelector(".viewer-content");
+
+    try {
+        const url = rawFileURL(item);
+        if (classification === "image") {
+            contentDiv.innerHTML = `<img src="${url}" alt="${item.name}">`;
+        } else if (classification === "audio") {
+            contentDiv.innerHTML = `
+                <audio controls src="${url}">
+                    Your browser does not support the audio element.
+                </audio>
+            `;
+        } else if (classification === "video") {
+            contentDiv.innerHTML = `
+                <video controls src="${url}">
+                    Your browser does not support the video tag.
+                </video>
+            `;
+        } else if (classification === "text") {
+            const res = await fetch(url);
+            const text = await res.text();
+            const escaped = text
+                .replace(/&/g, "&amp;")
+                .replace(/</g, "&lt;")
+                .replace(/>/g, "&gt;");
+            contentDiv.innerHTML = `<pre>${escaped}</pre>`;
+        } else {
+            contentDiv.innerHTML = `
+                <div class="muted">
+                    <p>Binary file or unsupported type.</p>
+                    <p>You can open or download it using the buttons above.</p>
+                </div>
+            `;
+        }
+    } catch (e) {
+        console.error("Error loading file content", e);
+        contentDiv.innerHTML = `
+            <div class="muted">
+                <span class="material-symbols-rounded" style="color: var(--danger); margin-right:4px;">error</span>
+                Error loading file content.
+            </div>
+        `;
+    }
+}
+
+/* =======================
+   NAVIGATION
+   ======================= */
+
+async function navigateToPath(path) {
+    currentPath = path;
+    renderPathBar();
+
+    const url = repoContentsURL(currentPath);
+    const pane = document.getElementById("files-pane");
+    pane.classList.add("loading");
+
+    try {
+        const data = await fetchJSON(url);
+        renderFiles(Array.isArray(data) ? data : []);
+    } catch (e) {
+        console.error("Error loading directory", e);
+        const container = document.getElementById("files-container");
+        const countEl = document.getElementById("item-count");
+        countEl.textContent = "0 items";
+        container.innerHTML = `
+            <div class="muted" style="font-size:0.8rem;">
+                <span class="material-symbols-rounded" style="color: var(--danger); margin-right:4px;">error</span>
+                Error loading directory.
+            </div>
+        `;
+    } finally {
+        pane.classList.remove("loading");
+    }
+}
+
+/* =======================
+   VIEW TOGGLE
+   ======================= */
+
+function setViewMode(mode) {
+    currentView = mode;
+    const filesView = document.getElementById("files-view");
+    const listBtn = document.getElementById("view-list-btn");
+    const gridBtn = document.getElementById("view-grid-btn");
+
+    if (mode === "list") {
+        filesView.classList.remove("view-grid");
+        listBtn.classList.add("active");
+        gridBtn.classList.remove("active");
+    } else {
+        filesView.classList.add("view-grid");
+        gridBtn.classList.add("active");
+        listBtn.classList.remove("active");
+    }
+}
+
+/* =======================
+   INIT
+   ======================= */
+
+async function init() {
+    // Hook up view toggle
+    document.getElementById("view-list-btn").addEventListener("click", () => setViewMode("list"));
+    document.getElementById("view-grid-btn").addEventListener("click", () => setViewMode("grid"));
+
+    renderViewerEmpty();
+    renderPathBar();
+    setViewMode("list");
+
+    try {
+        await loadTopBar();
+    } catch (e) {
+        console.error("Error loading user/repo info:", e);
+    }
+
+    await navigateToPath("");
+}
+
+init();
 </script>
 
 </body>
