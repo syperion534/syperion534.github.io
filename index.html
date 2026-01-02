@@ -6,22 +6,34 @@
 <title>Repo Explorer</title>
 
 <!-- Google Fonts -->
-<link href="https://fonts.googleapis.com/css2?family=Roboto+Mono:wght@300;400;500&display=swap" rel="stylesheet">
-<link href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:FILL@1;wght@300..700;GRAD@0;opsz@20..48" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 
 <style>
     :root {
-        --bg: #121212;
-        --bg-elevated: #1e1e1e;
-        --bg-elevated-soft: #181818;
-        --border-subtle: #333;
-        --accent: #90caf9;
-        --accent-soft: #1e88e5;
-        --text: #e0e0e0;
-        --text-dim: #a0a0a0;
-        --danger: #ef5350;
-        --radius: 8px;
-        --transition-fast: 0.15s ease-out;
+        --bg: #0a0e1a;
+        --bg-elevated: #141925;
+        --bg-elevated-soft: #1a1f2e;
+        --bg-hover: #1f2638;
+        --border-subtle: #2a3142;
+        --border-active: #3d4a63;
+        --accent: #667eea;
+        --accent-soft: #5568d3;
+        --accent-light: #7c8ff8;
+        --accent-glow: rgba(102, 126, 234, 0.2);
+        --text: #e6e8f0;
+        --text-dim: #9ca3af;
+        --text-dimmer: #6b7280;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --danger: #ef4444;
+        --radius: 12px;
+        --radius-sm: 8px;
+        --transition-fast: 0.15s cubic-bezier(0.4, 0, 0.2, 1);
+        --transition-medium: 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+        --shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.3), 0 2px 4px -1px rgba(0, 0, 0, 0.2);
+        --shadow-lg: 0 10px 15px -3px rgba(0, 0, 0, 0.4), 0 4px 6px -2px rgba(0, 0, 0, 0.3);
     }
 
     * {
@@ -32,21 +44,24 @@
         margin: 0;
         background: var(--bg);
         color: var(--text);
-        font-family: "Roboto Mono", monospace;
+        font-family: "Inter", -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+        line-height: 1.6;
     }
 
-    .material-symbols-rounded {
-        font-family: "Material Symbols Rounded";
-        font-weight: 400;
+    .material-icons {
+        font-family: "Material Icons";
+        font-weight: normal;
         font-style: normal;
         font-size: 20px;
         line-height: 1;
         letter-spacing: normal;
         text-transform: none;
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
+        display: inline-block;
+        white-space: nowrap;
+        word-wrap: normal;
+        direction: ltr;
         vertical-align: middle;
+        user-select: none;
     }
 
     a {
@@ -54,8 +69,21 @@
         text-decoration: none;
     }
 
-    /* Layout */
+    /* Loading spinner */
+    @keyframes spin {
+        to { transform: rotate(360deg); }
+    }
 
+    .spinner {
+        border: 2px solid var(--border-subtle);
+        border-top-color: var(--accent);
+        border-radius: 50%;
+        width: 20px;
+        height: 20px;
+        animation: spin 0.6s linear infinite;
+    }
+
+    /* Layout */
     .page {
         display: flex;
         flex-direction: column;
@@ -66,115 +94,141 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 16px;
-        padding: 12px 20px;
+        gap: 20px;
+        padding: 16px 24px;
         border-bottom: 1px solid var(--border-subtle);
         background: var(--bg-elevated-soft);
         position: sticky;
         top: 0;
-        z-index: 10;
+        z-index: 100;
+        backdrop-filter: blur(10px);
     }
 
     .user-repo {
         display: flex;
         align-items: center;
-        gap: 12px;
+        gap: 14px;
+        min-width: 0;
     }
 
     .avatar {
-        width: 36px;
-        height: 36px;
+        width: 42px;
+        height: 42px;
         border-radius: 50%;
-        background: #333;
+        background: var(--border-subtle);
         flex-shrink: 0;
+        border: 2px solid var(--border-active);
+        object-fit: cover;
     }
 
     .user-meta {
         display: flex;
         flex-direction: column;
-        gap: 2px;
+        gap: 4px;
+        min-width: 0;
     }
 
     .user-meta-main {
         display: flex;
         align-items: baseline;
         gap: 8px;
-        font-size: 0.95rem;
+        font-size: 1rem;
+        flex-wrap: wrap;
     }
 
     .user-name {
-        font-weight: 500;
+        font-weight: 600;
+        color: var(--text);
     }
 
     .repo-name {
-        color: var(--accent);
+        color: var(--accent-light);
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.95rem;
     }
 
     .user-meta-sub {
-        font-size: 0.7rem;
+        font-size: 0.75rem;
         color: var(--text-dim);
         display: flex;
         flex-wrap: wrap;
-        gap: 10px;
+        gap: 12px;
     }
 
     .tag {
         display: inline-flex;
         align-items: center;
-        gap: 4px;
+        gap: 5px;
     }
 
-    .tag .material-symbols-rounded {
+    .tag .material-icons {
         font-size: 16px;
     }
 
     .topbar-actions {
         display: flex;
         align-items: center;
-        gap: 8px;
+        gap: 10px;
+        flex-shrink: 0;
     }
 
     .btn {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 6px 10px;
+        padding: 8px 14px;
         border-radius: 999px;
         border: 1px solid var(--border-subtle);
-        background: transparent;
+        background: var(--bg-elevated);
         color: var(--text);
-        font-size: 0.75rem;
+        font-size: 0.8rem;
+        font-weight: 500;
         cursor: pointer;
-        transition: background var(--transition-fast), border-color var(--transition-fast), color var(--transition-fast), transform var(--transition-fast);
+        transition: all var(--transition-fast);
+        white-space: nowrap;
     }
 
     .btn:hover {
-        background: var(--bg-elevated);
+        background: var(--bg-hover);
+        border-color: var(--border-active);
+        transform: translateY(-1px);
+    }
+
+    .btn:active {
+        transform: translateY(0);
     }
 
     .btn.active {
-        background: var(--accent-soft);
-        border-color: var(--accent-soft);
-        color: #fff;
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+        box-shadow: 0 0 0 3px var(--accent-glow);
     }
 
-    .btn .material-symbols-rounded {
+    .btn .material-icons {
         font-size: 18px;
     }
 
     .layout-main {
         display: grid;
-        grid-template-columns: minmax(0, 2fr) minmax(0, 1.4fr);
-        gap: 1px;
-        border-top: 1px solid var(--border-subtle);
+        grid-template-columns: minmax(0, 1.8fr) minmax(0, 1.2fr);
+        gap: 0;
         min-height: 0;
         flex: 1;
     }
 
-    @media (max-width: 900px) {
+    @media (max-width: 1024px) {
         .layout-main {
             grid-template-columns: 1fr;
-            grid-auto-rows: auto;
+        }
+        .viewer-pane {
+            display: none;
+        }
+        .viewer-pane.mobile-show {
+            display: flex;
+        }
+        .files-pane.mobile-hide {
+            display: none;
         }
     }
 
@@ -183,44 +237,116 @@
         display: flex;
         flex-direction: column;
         background: var(--bg);
+        border-right: 1px solid var(--border-subtle);
+    }
+
+    .pane:last-child {
+        border-right: none;
     }
 
     .pane-header {
-        padding: 10px 16px;
+        padding: 14px 20px;
         border-bottom: 1px solid var(--border-subtle);
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         color: var(--text-dim);
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
+        gap: 12px;
         background: var(--bg-elevated-soft);
+        flex-shrink: 0;
     }
 
     .pane-title {
         display: flex;
         align-items: center;
         gap: 8px;
+        font-weight: 600;
+        color: var(--text);
     }
 
-    .pane-title .material-symbols-rounded {
-        font-size: 18px;
+    .pane-title .material-icons {
+        font-size: 20px;
         color: var(--accent);
     }
 
     .pane-body {
-        padding: 10px 16px;
+        padding: 16px 20px;
         overflow: auto;
+        flex: 1;
     }
 
-    /* Path / breadcrumb */
+    /* Search bar */
+    .search-container {
+        position: relative;
+        width: 100%;
+        max-width: 400px;
+        margin-bottom: 16px;
+    }
 
+    .search-input {
+        width: 100%;
+        padding: 10px 40px 10px 40px;
+        background: var(--bg-elevated);
+        border: 1px solid var(--border-subtle);
+        border-radius: var(--radius-sm);
+        color: var(--text);
+        font-size: 0.85rem;
+        font-family: inherit;
+        transition: all var(--transition-fast);
+    }
+
+    .search-input:focus {
+        outline: none;
+        border-color: var(--accent);
+        box-shadow: 0 0 0 3px var(--accent-glow);
+    }
+
+    .search-icon {
+        position: absolute;
+        left: 12px;
+        top: 50%;
+        transform: translateY(-50%);
+        color: var(--text-dim);
+        pointer-events: none;
+    }
+
+    .search-clear {
+        position: absolute;
+        right: 8px;
+        top: 50%;
+        transform: translateY(-50%);
+        padding: 4px;
+        cursor: pointer;
+        color: var(--text-dim);
+        opacity: 0;
+        transition: opacity var(--transition-fast);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        border-radius: 4px;
+    }
+
+    .search-clear:hover {
+        color: var(--text);
+        background: var(--bg-hover);
+    }
+
+    .search-input:not(:placeholder-shown) ~ .search-clear {
+        opacity: 1;
+    }
+
+    /* Path breadcrumb */
     .path-bar {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 4px;
         flex-wrap: wrap;
         font-size: 0.8rem;
+        padding: 8px 12px;
+        background: var(--bg-elevated);
+        border-radius: var(--radius-sm);
+        border: 1px solid var(--border-subtle);
     }
 
     .crumb {
@@ -228,35 +354,39 @@
         align-items: center;
         gap: 4px;
         cursor: pointer;
-        padding: 3px 6px;
-        border-radius: 999px;
-        transition: background var(--transition-fast), color var(--transition-fast);
+        padding: 4px 8px;
+        border-radius: 6px;
+        transition: all var(--transition-fast);
+        color: var(--text-dim);
+        font-family: "JetBrains Mono", monospace;
     }
 
     .crumb-root {
-        font-weight: 500;
-        color: var(--accent);
+        font-weight: 600;
+        color: var(--accent-light);
     }
 
     .crumb:hover {
-        background: var(--bg-elevated);
+        background: var(--bg-hover);
+        color: var(--text);
     }
 
     .crumb-separator {
-        opacity: 0.5;
-        font-size: 0.8rem;
+        opacity: 0.4;
+        font-size: 0.7rem;
+        user-select: none;
     }
 
     /* File list */
-
     .file-toolbar {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 8px;
-        margin-bottom: 8px;
+        gap: 12px;
+        margin-bottom: 12px;
         font-size: 0.75rem;
         color: var(--text-dim);
+        flex-wrap: wrap;
     }
 
     .file-toolbar-left {
@@ -264,6 +394,7 @@
         align-items: center;
         gap: 12px;
         flex-wrap: wrap;
+        flex: 1;
     }
 
     .file-toolbar-right {
@@ -275,13 +406,13 @@
     .files {
         display: flex;
         flex-direction: column;
-        gap: 6px;
+        gap: 8px;
     }
 
     .view-grid .files {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-        gap: 10px;
+        grid-template-columns: repeat(auto-fill, minmax(200px, 1fr));
+        gap: 12px;
     }
 
     .file-item {
@@ -291,14 +422,14 @@
         grid-template-areas:
             "icon main"
             "icon meta";
-        gap: 2px 8px;
-        padding: 8px 10px;
-        border-radius: var(--radius);
+        gap: 4px 12px;
+        padding: 12px 14px;
+        border-radius: var(--radius-sm);
         background: var(--bg-elevated);
         cursor: pointer;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
         border: 1px solid transparent;
-        transition: background var(--transition-fast), border-color var(--transition-fast), transform var(--transition-fast), box-shadow var(--transition-fast);
+        transition: all var(--transition-fast);
     }
 
     .view-grid .file-item {
@@ -308,17 +439,21 @@
             "icon"
             "main"
             "meta";
-        text-align: left;
+        text-align: center;
+        padding: 16px;
     }
 
     .file-item:hover {
-        background: #242424;
-        border-color: var(--border-subtle);
+        background: var(--bg-hover);
+        border-color: var(--border-active);
+        transform: translateY(-2px);
+        box-shadow: var(--shadow);
     }
 
     .file-item.active {
         border-color: var(--accent);
-        box-shadow: 0 0 0 1px rgba(144, 202, 249, 0.4);
+        box-shadow: 0 0 0 3px var(--accent-glow), var(--shadow);
+        background: var(--bg-elevated-soft);
     }
 
     .file-icon {
@@ -328,15 +463,23 @@
         justify-content: center;
     }
 
+    .view-grid .file-icon {
+        margin-bottom: 8px;
+    }
+
     .file-icon-inner {
-        width: 30px;
-        height: 30px;
-        border-radius: 999px;
+        width: 40px;
+        height: 40px;
+        border-radius: 12px;
         display: flex;
         align-items: center;
         justify-content: center;
-        background: #263238;
-        color: var(--accent);
+        font-size: 24px;
+        transition: transform var(--transition-fast);
+    }
+
+    .file-item:hover .file-icon-inner {
+        transform: scale(1.1);
     }
 
     .file-main {
@@ -344,31 +487,46 @@
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 6px;
+        gap: 8px;
+        min-width: 0;
+    }
+
+    .view-grid .file-main {
+        justify-content: center;
     }
 
     .file-name {
         overflow: hidden;
         text-overflow: ellipsis;
         white-space: nowrap;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.85rem;
+        font-weight: 500;
     }
 
     .file-badge {
         font-size: 0.65rem;
-        padding: 2px 6px;
+        padding: 3px 8px;
         border-radius: 999px;
-        background: rgba(144, 202, 249, 0.12);
-        color: var(--accent);
+        background: rgba(102, 126, 234, 0.15);
+        color: var(--accent-light);
         flex-shrink: 0;
+        font-weight: 600;
+        text-transform: uppercase;
+        letter-spacing: 0.5px;
     }
 
     .file-meta {
         grid-area: meta;
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 10px;
         font-size: 0.7rem;
-        color: var(--text-dim);
+        color: var(--text-dimmer);
+    }
+
+    .view-grid .file-meta {
+        justify-content: center;
     }
 
     .meta-pill {
@@ -377,102 +535,117 @@
         gap: 4px;
     }
 
-    .meta-pill .material-symbols-rounded {
+    .meta-pill .material-icons {
         font-size: 14px;
     }
 
     /* Viewer */
-
     .viewer-empty {
-        font-size: 0.8rem;
+        font-size: 0.9rem;
         color: var(--text-dim);
+        text-align: center;
+        padding: 60px 20px;
+    }
+
+    .viewer-placeholder-icon {
+        font-size: 48px;
+        margin-bottom: 16px;
+        color: var(--text-dimmer);
+        opacity: 0.5;
     }
 
     .viewer-header-row {
         display: flex;
         align-items: center;
         justify-content: space-between;
-        gap: 10px;
-        font-size: 0.78rem;
+        gap: 12px;
+        font-size: 0.85rem;
+        margin-bottom: 12px;
+        flex-wrap: wrap;
     }
 
     .viewer-title {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+        min-width: 0;
+        flex: 1;
     }
 
     .viewer-title-name {
-        max-width: 260px;
+        max-width: 300px;
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        font-family: "JetBrains Mono", monospace;
+        font-weight: 600;
+        font-size: 0.9rem;
     }
 
     .viewer-controls {
         display: flex;
         align-items: center;
-        gap: 6px;
+        gap: 8px;
+        flex-wrap: wrap;
     }
 
     .viewer-meta {
-        margin-top: 4px;
-        font-size: 0.7rem;
+        margin-bottom: 16px;
+        font-size: 0.75rem;
         color: var(--text-dim);
         display: flex;
         flex-wrap: wrap;
-        gap: 8px;
+        gap: 10px;
     }
 
     .viewer-content {
-        margin-top: 10px;
         border-radius: var(--radius);
         border: 1px solid var(--border-subtle);
         background: var(--bg-elevated);
-        padding: 10px;
-        max-height: calc(100vh - 220px);
+        padding: 16px;
+        max-height: calc(100vh - 280px);
         overflow: auto;
-        font-size: 0.8rem;
+        font-size: 0.85rem;
     }
 
     .viewer-content pre {
         margin: 0;
         white-space: pre;
         overflow: auto;
+        font-family: "JetBrains Mono", monospace;
+        font-size: 0.8rem;
+        line-height: 1.6;
     }
 
     .viewer-content img {
         max-width: 100%;
         height: auto;
         display: block;
-        border-radius: var(--radius);
+        border-radius: var(--radius-sm);
+        box-shadow: var(--shadow);
     }
 
     .viewer-content video,
     .viewer-content audio {
         max-width: 100%;
         display: block;
-        border-radius: var(--radius);
-    }
-
-    .viewer-placeholder-icon {
-        font-size: 34px;
-        margin-bottom: 8px;
-        color: var(--border-subtle);
+        border-radius: var(--radius-sm);
     }
 
     .pill {
         display: inline-flex;
         align-items: center;
         gap: 6px;
-        padding: 4px 8px;
+        padding: 6px 10px;
         border-radius: 999px;
+        background: var(--bg-elevated);
         border: 1px solid var(--border-subtle);
-        font-size: 0.65rem;
+        font-size: 0.7rem;
         color: var(--text-dim);
+        font-weight: 500;
     }
 
-    .pill .material-symbols-rounded {
+    .pill .material-icons {
         font-size: 14px;
     }
 
@@ -480,10 +653,91 @@
         color: var(--text-dim);
     }
 
-    /* Small helper */
+    /* Error state */
+    .error-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 12px;
+        padding: 40px 20px;
+        text-align: center;
+        color: var(--text-dim);
+    }
 
-    .text-mono {
-        font-family: "Roboto Mono", monospace;
+    .error-state .material-icons {
+        font-size: 48px;
+        color: var(--danger);
+        opacity: 0.7;
+    }
+
+    .retry-btn {
+        margin-top: 8px;
+        background: var(--accent);
+        border-color: var(--accent);
+        color: white;
+    }
+
+    .retry-btn:hover {
+        background: var(--accent-soft);
+        border-color: var(--accent-soft);
+    }
+
+    /* Loading state */
+    .loading-state {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        gap: 16px;
+        padding: 40px 20px;
+        color: var(--text-dim);
+    }
+
+    /* Mobile back button */
+    .mobile-back {
+        display: none;
+    }
+
+    @media (max-width: 1024px) {
+        .mobile-back {
+            display: flex;
+        }
+        .topbar {
+            padding: 12px 16px;
+        }
+        .pane-body {
+            padding: 12px 16px;
+        }
+    }
+
+    /* Scrollbar styling */
+    ::-webkit-scrollbar {
+        width: 10px;
+        height: 10px;
+    }
+
+    ::-webkit-scrollbar-track {
+        background: var(--bg);
+    }
+
+    ::-webkit-scrollbar-thumb {
+        background: var(--border-subtle);
+        border-radius: 5px;
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+        background: var(--border-active);
+    }
+
+    /* Copy button for paths */
+    .copy-btn {
+        padding: 4px 8px;
+        font-size: 0.7rem;
+    }
+
+    .copy-btn.copied {
+        background: var(--success);
+        border-color: var(--success);
+        color: white;
     }
 </style>
 </head>
@@ -498,19 +752,19 @@
                 <div class="user-meta-main">
                     <span id="user-name" class="user-name">Loading…</span>
                     <span>/</span>
-                    <span id="repo-name" class="repo-name text-mono"></span>
+                    <span id="repo-name" class="repo-name"></span>
                 </div>
                 <div class="user-meta-sub">
                     <span class="tag">
-                        <span class="material-symbols-rounded">Description</span>
+                        <span class="material-icons">description</span>
                         <span id="file-count">– files</span>
                     </span>
                     <span class="tag">
-                        <span class="material-symbols-rounded">Merge</span>
+                        <span class="material-icons">merge_type</span>
                         <span id="default-branch">branch: –</span>
                     </span>
                     <span class="tag">
-                        <span class="material-symbols-rounded">Schedule</span>
+                        <span class="material-icons">schedule</span>
                         <span id="repo-updated">updated: –</span>
                     </span>
                 </div>
@@ -519,11 +773,11 @@
 
         <div class="topbar-actions">
             <button id="view-list-btn" class="btn active" type="button">
-                <span class="material-symbols-rounded">View List</span>
+                <span class="material-icons">view_list</span>
                 <span>List</span>
             </button>
             <button id="view-grid-btn" class="btn" type="button">
-                <span class="material-symbols-rounded">Grid View</span>
+                <span class="material-icons">grid_view</span>
                 <span>Grid</span>
             </button>
         </div>
@@ -532,20 +786,36 @@
     <main class="layout-main">
 
         <!-- LEFT: FILES -->
-        <section class="pane" id="files-pane">
+        <section class="pane files-pane" id="files-pane">
             <div class="pane-header">
                 <div class="pane-title">
-                    <span class="material-symbols-rounded">Folder Open</span>
+                    <span class="material-icons">folder_open</span>
                     <span>Files</span>
                 </div>
-                <div class="path-bar" id="path-bar"></div>
+                <button class="btn mobile-back" id="mobile-back" style="display: none;">
+                    <span class="material-icons">arrow_back</span>
+                    <span>Back</span>
+                </button>
             </div>
             <div class="pane-body view-list" id="files-view">
+                <div class="search-container">
+                    <span class="material-icons search-icon">search</span>
+                    <input type="text" class="search-input" id="search-input" placeholder="Search files..." />
+                    <button class="search-clear" id="search-clear">
+                        <span class="material-icons">close</span>
+                    </button>
+                </div>
+
+                <div class="path-bar" id="path-bar"></div>
+
                 <div class="file-toolbar">
                     <div class="file-toolbar-left">
                         <span id="current-folder-label" class="muted">Path: /</span>
                     </div>
                     <div class="file-toolbar-right">
+                        <button class="btn copy-btn" id="copy-path-btn" title="Copy current path">
+                            <span class="material-icons">content_copy</span>
+                        </button>
                         <span id="item-count" class="muted">– items</span>
                     </div>
                 </div>
@@ -554,20 +824,20 @@
         </section>
 
         <!-- RIGHT: VIEWER -->
-        <section class="pane">
+        <section class="pane viewer-pane">
             <div class="pane-header">
                 <div class="pane-title">
-                    <span class="material-symbols-rounded">Preview</span>
+                    <span class="material-icons">preview</span>
                     <span>Preview</span>
                 </div>
             </div>
             <div class="pane-body">
                 <div id="viewer">
                     <div class="viewer-empty">
-                        <div class="viewer-placeholder-icon material-symbols-rounded">
-                            Arrow Selector Tool
+                        <div class="viewer-placeholder-icon material-icons">
+                            touch_app
                         </div>
-                        <div>Click a file to view its content here.</div>
+                        <div>Click a file to preview its content</div>
                     </div>
                 </div>
             </div>
@@ -586,16 +856,17 @@ const CONFIG = {
     BRANCH: "main",
     MAX_FILES_COUNT: 5000
 };
-    
 
 /* =======================
    STATE
    ======================= */
 let currentPath = "";
-let currentView = "list"; // "list" or "grid"
+let currentView = "list";
 let currentItems = [];
+let filteredItems = [];
 let selectedFile = null;
 let totalFileCount = 0;
+let searchQuery = "";
 
 /* =======================
    HELPERS
@@ -627,7 +898,16 @@ function formatDate(iso) {
     if (!iso) return "–";
     const d = new Date(iso);
     if (isNaN(d)) return "–";
-    return d.toLocaleString();
+    const now = new Date();
+    const diff = now - d;
+    const days = Math.floor(diff / (1000 * 60 * 60 * 24));
+    
+    if (days === 0) return "today";
+    if (days === 1) return "yesterday";
+    if (days < 7) return `${days} days ago`;
+    if (days < 30) return `${Math.floor(days / 7)} weeks ago`;
+    if (days < 365) return `${Math.floor(days / 30)} months ago`;
+    return `${Math.floor(days / 365)} years ago`;
 }
 
 function getExtension(name) {
@@ -637,7 +917,7 @@ function getExtension(name) {
 }
 
 function classifyFile(ext, mime) {
-    const textExts = ["txt", "md", "markdown", "json", "yml", "yaml", "xml", "html", "htm", "css", "js", "ts", "tsx", "jsx", "c", "cpp", "h", "hpp", "py", "rb", "rs", "go", "java", "cs", "php", "sh", "bat", "lua", "ini", "cfg", "toml"];
+    const textExts = ["txt", "md", "markdown", "json", "yml", "yaml", "xml", "html", "htm", "css", "js", "ts", "tsx", "jsx", "c", "cpp", "h", "hpp", "py", "rb", "rs", "go", "java", "cs", "php", "sh", "bat", "lua", "ini", "cfg", "toml", "vue", "svelte"];
     const imgExts = ["png", "jpg", "jpeg", "gif", "webp", "svg", "bmp", "ico", "avif"];
     const audioExts = ["mp3", "ogg", "wav", "flac", "m4a", "aac", "opus"];
     const videoExts = ["mp4", "webm", "ogg", "mov", "m4v", "avi", "mkv"];
@@ -653,9 +933,9 @@ function classifyFile(ext, mime) {
 function getIconForItem(item) {
     if (item.type === "dir") {
         return {
-            icon: "Folder",
-            color: "#ffca28",
-            bg: "#3e2723",
+            icon: "folder",
+            color: "#fbbf24",
+            bg: "linear-gradient(135deg, #fbbf24 0%, #f59e0b 100%)",
             label: "folder"
         };
     }
@@ -663,64 +943,51 @@ function getIconForItem(item) {
     const ext = getExtension(item.name);
     const type = classifyFile(ext, item.type);
 
-    const base = {
-        icon: "Description",
-        color: "#90caf9",
-        bg: "#0d47a1",
-        label: ext || "file"
+    const iconMap = {
+        "md": { icon: "description", bg: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)", color: "#fff" },
+        "txt": { icon: "article", bg: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)", color: "#fff" },
+        "json": { icon: "data_object", bg: "linear-gradient(135deg, #10b981 0%, #059669 100%)", color: "#fff" },
+        "yml": { icon: "settings", bg: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff" },
+        "yaml": { icon: "settings", bg: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff" },
+        "html": { icon: "code", bg: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)", color: "#fff" },
+        "htm": { icon: "code", bg: "linear-gradient(135deg, #f97316 0%, #ea580c 100%)", color: "#fff" },
+        "css": { icon: "palette", bg: "linear-gradient(135deg, #06b6d4 0%, #0891b2 100%)", color: "#fff" },
+        "js": { icon: "javascript", bg: "linear-gradient(135deg, #facc15 0%, #eab308 100%)", color: "#000" },
+        "ts": { icon: "javascript", bg: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", color: "#fff" },
+        "tsx": { icon: "javascript", bg: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", color: "#fff" },
+        "jsx": { icon: "javascript", bg: "linear-gradient(135deg, #3b82f6 0%, #2563eb 100%)", color: "#fff" },
+        "py": { icon: "code", bg: "linear-gradient(135deg, #3b82f6 0%, #1d4ed8 100%)", color: "#fff" },
+        "png": { icon: "image", bg: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)", color: "#fff" },
+        "jpg": { icon: "image", bg: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)", color: "#fff" },
+        "jpeg": { icon: "image", bg: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)", color: "#fff" },
+        "gif": { icon: "gif", bg: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)", color: "#fff" },
+        "svg": { icon: "image", bg: "linear-gradient(135deg, #8b5cf6 0%, #7c3aed 100%)", color: "#fff" },
+        "mp3": { icon: "audio_file", bg: "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)", color: "#fff" },
+        "wav": { icon: "audio_file", bg: "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)", color: "#fff" },
+        "mp4": { icon: "video_file", bg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", color: "#fff" },
+        "webm": { icon: "video_file", bg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", color: "#fff" },
+        "pdf": { icon: "picture_as_pdf", bg: "linear-gradient(135deg, #dc2626 0%, #b91c1c 100%)", color: "#fff" },
+        "zip": { icon: "folder_zip", bg: "linear-gradient(135deg, #a855f7 0%, #9333ea 100%)", color: "#fff" },
+        "tar": { icon: "folder_zip", bg: "linear-gradient(135deg, #a855f7 0%, #9333ea 100%)", color: "#fff" },
+        "gz": { icon: "folder_zip", bg: "linear-gradient(135deg, #a855f7 0%, #9333ea 100%)", color: "#fff" }
     };
 
-    const map = {
-        "md": {icon: "Markdown", bg: "#263238"},
-        "txt": {icon: "Text Fields", bg: "#263238"},
-        "json": {icon: "File Json", bg: "#1b5e20"},
-        "yml": {icon: "File Copy", bg: "#1b5e20"},
-        "yaml": {icon: "File Copy", bg: "#1b5e20"},
-        "html": {icon: "HTML", bg: "#4a148c"},
-        "htm": {icon: "HTML", bg: "#4a148c"},
-        "css": {icon: "CSS", bg: "#01579b"},
-        "js": {icon: "Javascript", bg: "#f57f17"},
-        "ts": {icon: "Code", bg: "#0d47a1"},
-        "tsx": {icon: "Code", bg: "#0d47a1"},
-        "jsx": {icon: "Code", bg: "#0d47a1"},
-        "png": {icon: "Image", bg: "#1b5e20"},
-        "jpg": {icon: "Image", bg: "#1b5e20"},
-        "jpeg": {icon: "Image", bg: "#1b5e20"},
-        "gif": {icon: "Image", bg: "#1b5e20"},
-        "webp": {icon: "Image", bg: "#1b5e20"},
-        "svg": {icon: "Image", bg: "#1b5e20"},
-        "mp3": {icon: "Audio File", bg: "#4a148c"},
-        "wav": {icon: "Audio File", bg: "#4a148c"},
-        "ogg": {icon: "Audio File", bg: "#4a148c"},
-        "mp4": {icon: "Video File", bg: "#3e2723"},
-        "webm": {icon: "Video File", bg: "#3e2723"},
-        "mkv": {icon: "Video File", bg: "#3e2723"},
-        "zip": {icon: "Folder Zip", bg: "#3e2723"},
-        "tar": {icon: "Folder Zip", bg: "#3e2723"},
-        "gz": {icon: "Folder Zip", bg: "#3e2723"},
-        "pdf": {icon: "Picture As Pdf", bg: "#b71c1c"}
-    };
-
-    if (map[ext]) {
-        return {
-            icon: map[ext].icon || base.icon,
-            color: base.color,
-            bg: map[ext].bg || base.bg,
-            label: ext || base.label
-        };
+    if (iconMap[ext]) {
+        return { ...iconMap[ext], label: ext || "file" };
     }
 
+    // Defaults by type
     if (type === "image") {
-        return {...base, icon: "Image", bg: "#1b5e20"};
+        return { icon: "image", bg: "linear-gradient(135deg, #ec4899 0%, #db2777 100%)", color: "#fff", label: ext };
     } else if (type === "audio") {
-        return {...base, icon: "Audio File", bg: "#4a148c"};
+        return { icon: "audio_file", bg: "linear-gradient(135deg, #f43f5e 0%, #e11d48 100%)", color: "#fff", label: ext };
     } else if (type === "video") {
-        return {...base, icon: "Video File", bg: "#3e2723"};
+        return { icon: "video_file", bg: "linear-gradient(135deg, #ef4444 0%, #dc2626 100%)", color: "#fff", label: ext };
     } else if (type === "text") {
-        return {...base, icon: "Description", bg: "#263238"};
+        return { icon: "description", bg: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)", color: "#fff", label: ext };
     }
 
-    return base;
+    return { icon: "insert_drive_file", bg: "linear-gradient(135deg, #6b7280 0%, #4b5563 100%)", color: "#fff", label: ext || "file" };
 }
 
 /* =======================
@@ -747,11 +1014,9 @@ function userInfoURL() {
 }
 
 function rawFileURL(item) {
-    // download_url is already raw.githubusercontent.com link
     return item.download_url;
 }
 
-/* Count files recursively (with a limit) */
 async function countAllFiles(path = "", seen = {count: 0}) {
     if (seen.count >= CONFIG.MAX_FILES_COUNT) return;
     const url = repoContentsURL(path);
@@ -793,7 +1058,6 @@ async function loadTopBar() {
     branchEl.textContent = `branch: ${repo.default_branch}`;
     updatedEl.textContent = `updated: ${formatDate(repo.pushed_at)}`;
 
-    // Use repo default_branch for browsing if you want
     CONFIG.BRANCH = repo.default_branch;
 
     try {
@@ -818,7 +1082,7 @@ function renderPathBar() {
 
     const rootCrumb = document.createElement("span");
     rootCrumb.className = "crumb crumb-root";
-    rootCrumb.textContent = "/";
+    rootCrumb.innerHTML = '<span class="material-icons" style="font-size: 16px;">home</span>';
     rootCrumb.title = "Go to repository root";
     rootCrumb.addEventListener("click", () => navigateToPath(""));
     pathBar.appendChild(rootCrumb);
@@ -843,6 +1107,22 @@ function renderPathBar() {
 }
 
 /* =======================
+   SEARCH
+   ======================= */
+
+function filterItems() {
+    const query = searchQuery.toLowerCase().trim();
+    if (!query) {
+        filteredItems = currentItems;
+    } else {
+        filteredItems = currentItems.filter(item => 
+            item.name.toLowerCase().includes(query)
+        );
+    }
+    renderFiles(filteredItems);
+}
+
+/* =======================
    RENDER: FILE LIST
    ======================= */
 
@@ -857,15 +1137,25 @@ function renderFiles(items) {
     const countEl = document.getElementById("item-count");
     container.innerHTML = "";
 
-    currentItems = items;
-
     if (!items || !items.length) {
-        countEl.textContent = "0 items";
-        container.innerHTML = `<div class="muted" style="font-size:0.8rem;">This folder is empty.</div>`;
+        if (searchQuery) {
+            countEl.textContent = "0 matches";
+            container.innerHTML = `
+                <div class="error-state">
+                    <span class="material-icons">search_off</span>
+                    <div>No files match "${searchQuery}"</div>
+                </div>
+            `;
+        } else {
+            countEl.textContent = "0 items";
+            container.innerHTML = `<div class="muted" style="font-size:0.85rem; text-align: center; padding: 20px;">This folder is empty.</div>`;
+        }
         return;
     }
 
-    countEl.textContent = `${items.length} item${items.length !== 1 ? "s" : ""}`;
+    countEl.textContent = searchQuery 
+        ? `${items.length} match${items.length !== 1 ? 'es' : ''}`
+        : `${items.length} item${items.length !== 1 ? 's' : ''}`;
 
     const sorted = [...items].sort((a, b) => {
         if (a.type === b.type) {
@@ -886,8 +1176,8 @@ function renderFiles(items) {
         const iconWrap = document.createElement("div");
         iconWrap.className = "file-icon";
         const iconInner = document.createElement("div");
-        iconInner.className = "file-icon-inner material-symbols-rounded";
-        iconInner.style.backgroundColor = iconInfo.bg;
+        iconInner.className = "file-icon-inner material-icons";
+        iconInner.style.background = iconInfo.bg;
         iconInner.style.color = iconInfo.color;
         iconInner.textContent = iconInfo.icon;
         iconWrap.appendChild(iconInner);
@@ -896,12 +1186,12 @@ function renderFiles(items) {
         main.className = "file-main";
 
         const name = document.createElement("div");
-        name.className = "file-name text-mono";
+        name.className = "file-name";
         name.textContent = item.name;
 
         const badge = document.createElement("div");
-        badge.className = "file-badge text-mono";
-        badge.textContent = isDir ? "folder" : (getExtension(item.name) || "file");
+        badge.className = "file-badge";
+        badge.textContent = iconInfo.label;
 
         main.appendChild(name);
         main.appendChild(badge);
@@ -909,29 +1199,22 @@ function renderFiles(items) {
         const meta = document.createElement("div");
         meta.className = "file-meta";
 
-        const sizePill = document.createElement("span");
-        sizePill.className = "meta-pill";
-        sizePill.innerHTML = `
-            <span class="material-symbols-rounded">data_usage</span>
-            <span>${isDir ? "—" : formatBytes(item.size)}</span>
-        `;
-
-        const typePill = document.createElement("span");
-        typePill.className = "meta-pill";
-        typePill.innerHTML = `
-            <span class="material-symbols-rounded">category</span>
-            <span>${isDir ? "Directory" : (item.type || "File")}</span>
-        `;
+        if (!isDir) {
+            const sizePill = document.createElement("span");
+            sizePill.className = "meta-pill";
+            sizePill.innerHTML = `
+                <span class="material-icons">data_usage</span>
+                <span>${formatBytes(item.size)}</span>
+            `;
+            meta.appendChild(sizePill);
+        }
 
         const shaPill = document.createElement("span");
         shaPill.className = "meta-pill";
         shaPill.innerHTML = `
-            <span class="material-symbols-rounded">fingerprint</span>
+            <span class="material-icons">fingerprint</span>
             <span>${item.sha.slice(0, 7)}</span>
         `;
-
-        meta.appendChild(sizePill);
-        meta.appendChild(typePill);
         meta.appendChild(shaPill);
 
         el.appendChild(iconWrap);
@@ -950,6 +1233,13 @@ function renderFiles(items) {
             } else {
                 selectedFile = item;
                 await openFileInViewer(item);
+                
+                // Show viewer on mobile
+                if (window.innerWidth <= 1024) {
+                    document.querySelector('.files-pane').classList.add('mobile-hide');
+                    document.querySelector('.viewer-pane').classList.add('mobile-show');
+                    document.getElementById('mobile-back').style.display = 'flex';
+                }
             }
         });
 
@@ -965,10 +1255,10 @@ function renderViewerEmpty() {
     const viewer = document.getElementById("viewer");
     viewer.innerHTML = `
         <div class="viewer-empty">
-            <div class="viewer-placeholder-icon material-symbols-rounded">
-                browse_activity
+            <div class="viewer-placeholder-icon material-icons">
+                touch_app
             </div>
-            <div>Click a file to view its content here.</div>
+            <div>Click a file to preview its content</div>
         </div>
     `;
 }
@@ -983,37 +1273,44 @@ async function openFileInViewer(item) {
     const headerHTML = `
         <div class="viewer-header-row">
             <div class="viewer-title">
-                <span class="material-symbols-rounded" style="color:${iconInfo.color};">${iconInfo.icon}</span>
-                <span class="viewer-title-name text-mono" title="${item.path}">${item.name}</span>
+                <span class="material-icons" style="color:${iconInfo.color};">${iconInfo.icon}</span>
+                <span class="viewer-title-name" title="${item.path}">${item.name}</span>
             </div>
             <div class="viewer-controls">
                 <a class="btn" href="${item.html_url}" target="_blank" rel="noopener noreferrer">
-                    <span class="material-symbols-rounded">open_in_new</span>
-                    <span>On GitHub</span>
+                    <span class="material-icons">open_in_new</span>
+                    <span>GitHub</span>
                 </a>
-                <a class="btn" href="${rawFileURL(item)}" target="_blank" rel="noopener noreferrer">
-                    <span class="material-symbols-rounded">download</span>
-                    <span>Raw</span>
+                <a class="btn" href="${rawFileURL(item)}" download>
+                    <span class="material-icons">download</span>
+                    <span>Download</span>
                 </a>
             </div>
         </div>
         <div class="viewer-meta">
             <span class="pill">
-                <span class="material-symbols-rounded">data_usage</span>
+                <span class="material-icons">data_usage</span>
                 <span>${formatBytes(item.size)}</span>
             </span>
             <span class="pill">
-                <span class="material-symbols-rounded">category</span>
+                <span class="material-icons">category</span>
                 <span>${classification}</span>
             </span>
             <span class="pill">
-                <span class="material-symbols-rounded">fingerprint</span>
+                <span class="material-icons">fingerprint</span>
                 <span>${item.sha.slice(0, 10)}</span>
             </span>
         </div>
     `;
 
-    viewer.innerHTML = headerHTML + `<div class="viewer-content"><div class="muted">Loading content…</div></div>`;
+    viewer.innerHTML = headerHTML + `
+        <div class="viewer-content">
+            <div class="loading-state">
+                <div class="spinner"></div>
+                <div class="muted">Loading content…</div>
+            </div>
+        </div>
+    `;
     const contentDiv = viewer.querySelector(".viewer-content");
 
     try {
@@ -1022,13 +1319,13 @@ async function openFileInViewer(item) {
             contentDiv.innerHTML = `<img src="${url}" alt="${item.name}">`;
         } else if (classification === "audio") {
             contentDiv.innerHTML = `
-                <audio controls src="${url}">
+                <audio controls src="${url}" style="width: 100%;">
                     Your browser does not support the audio element.
                 </audio>
             `;
         } else if (classification === "video") {
             contentDiv.innerHTML = `
-                <video controls src="${url}">
+                <video controls src="${url}" style="max-width: 100%;">
                     Your browser does not support the video tag.
                 </video>
             `;
@@ -1042,18 +1339,23 @@ async function openFileInViewer(item) {
             contentDiv.innerHTML = `<pre>${escaped}</pre>`;
         } else {
             contentDiv.innerHTML = `
-                <div class="muted">
-                    <p>Binary file or unsupported type.</p>
-                    <p>You can open or download it using the buttons above.</p>
+                <div class="viewer-empty">
+                    <span class="material-icons" style="font-size: 48px; opacity: 0.3; margin-bottom: 12px;">insert_drive_file</span>
+                    <p>Binary file or unsupported type</p>
+                    <p style="font-size: 0.8rem; margin-top: 8px;">Use the buttons above to view on GitHub or download</p>
                 </div>
             `;
         }
     } catch (e) {
         console.error("Error loading file content", e);
         contentDiv.innerHTML = `
-            <div class="muted">
-                <span class="material-symbols-rounded" style="color: var(--danger); margin-right:4px;">error</span>
-                Error loading file content.
+            <div class="error-state">
+                <span class="material-icons">error</span>
+                <div>Error loading file content</div>
+                <button class="btn retry-btn" onclick="openFileInViewer(selectedFile)">
+                    <span class="material-icons">refresh</span>
+                    <span>Retry</span>
+                </button>
             </div>
         `;
     }
@@ -1065,28 +1367,38 @@ async function openFileInViewer(item) {
 
 async function navigateToPath(path) {
     currentPath = path;
+    searchQuery = "";
+    document.getElementById("search-input").value = "";
     renderPathBar();
 
-    const url = repoContentsURL(currentPath);
-    const pane = document.getElementById("files-pane");
-    pane.classList.add("loading");
+    const container = document.getElementById("files-container");
+    container.innerHTML = `
+        <div class="loading-state">
+            <div class="spinner"></div>
+            <div class="muted">Loading directory…</div>
+        </div>
+    `;
 
     try {
+        const url = repoContentsURL(currentPath);
         const data = await fetchJSON(url);
-        renderFiles(Array.isArray(data) ? data : []);
+        currentItems = Array.isArray(data) ? data : [];
+        filteredItems = currentItems;
+        renderFiles(filteredItems);
     } catch (e) {
         console.error("Error loading directory", e);
-        const container = document.getElementById("files-container");
         const countEl = document.getElementById("item-count");
         countEl.textContent = "0 items";
         container.innerHTML = `
-            <div class="muted" style="font-size:0.8rem;">
-                <span class="material-symbols-rounded" style="color: var(--danger); margin-right:4px;">error</span>
-                Error loading directory.
+            <div class="error-state">
+                <span class="material-icons">error</span>
+                <div>Error loading directory</div>
+                <button class="btn retry-btn" onclick="navigateToPath('${path}')">
+                    <span class="material-icons">refresh</span>
+                    <span>Retry</span>
+                </button>
             </div>
         `;
-    } finally {
-        pane.classList.remove("loading");
     }
 }
 
@@ -1102,13 +1414,35 @@ function setViewMode(mode) {
 
     if (mode === "list") {
         filesView.classList.remove("view-grid");
+        filesView.classList.add("view-list");
         listBtn.classList.add("active");
         gridBtn.classList.remove("active");
     } else {
+        filesView.classList.remove("view-list");
         filesView.classList.add("view-grid");
         gridBtn.classList.add("active");
         listBtn.classList.remove("active");
     }
+}
+
+/* =======================
+   COPY PATH
+   ======================= */
+
+function copyCurrentPath() {
+    const path = currentPath || "/";
+    navigator.clipboard.writeText(path).then(() => {
+        const btn = document.getElementById("copy-path-btn");
+        const originalHTML = btn.innerHTML;
+        btn.classList.add("copied");
+        btn.innerHTML = '<span class="material-icons">check</span>';
+        setTimeout(() => {
+            btn.classList.remove("copied");
+            btn.innerHTML = originalHTML;
+        }, 2000);
+    }).catch(err => {
+        console.error("Failed to copy:", err);
+    });
 }
 
 /* =======================
@@ -1119,6 +1453,32 @@ async function init() {
     // Hook up view toggle
     document.getElementById("view-list-btn").addEventListener("click", () => setViewMode("list"));
     document.getElementById("view-grid-btn").addEventListener("click", () => setViewMode("grid"));
+
+    // Hook up search
+    const searchInput = document.getElementById("search-input");
+    const searchClear = document.getElementById("search-clear");
+    
+    searchInput.addEventListener("input", (e) => {
+        searchQuery = e.target.value;
+        filterItems();
+    });
+
+    searchClear.addEventListener("click", () => {
+        searchInput.value = "";
+        searchQuery = "";
+        filterItems();
+        searchInput.focus();
+    });
+
+    // Hook up copy path
+    document.getElementById("copy-path-btn").addEventListener("click", copyCurrentPath);
+
+    // Hook up mobile back button
+    document.getElementById("mobile-back").addEventListener("click", () => {
+        document.querySelector('.files-pane').classList.remove('mobile-hide');
+        document.querySelector('.viewer-pane').classList.remove('mobile-show');
+        document.getElementById('mobile-back').style.display = 'none';
+    });
 
     renderViewerEmpty();
     renderPathBar();
